@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Itinerary — a trip planner that shows its working</title>
+<meta name="description" content="A city trip planner that selects, clusters, routes and schedules a day-by-day itinerary — and reports the optimisation it did to get there.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip" href="#planner">Skip to the planner</a>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true">◴</span>
+      <span>
+        <strong>Itinerary</strong>
+        <small>A trip planner that shows its working</small>
+      </span>
+    </a>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#planner">Plan</a>
+      <a href="#method">Method</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ------------------------------------------------------------- hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="kicker">Constraint-based itinerary planning</p>
+        <h1>Five days.<br>Forty&nbsp;attractions.<br><em>One sensible order.</em></h1>
+        <p class="lede">
+          Tell it where you are going, how long for and what you like. It scores
+          every place in the city against your interests, fits what your budget
+          and your hours allow, groups the result into days that stay in one
+          neighbourhood, and puts each day in the order that walks the least.
+        </p>
+        <p class="lede muted">
+          No language model is involved, and there is no API key to enter — the
+          scheduling is done here in your browser, and the page reports exactly
+          what it optimised so you can check the claim.
+        </p>
+        <div class="hero-stats">
+          <div><strong id="hero-places">—</strong><span>places catalogued</span></div>
+          <div><strong id="hero-cities">—</strong><span>cities</span></div>
+          <div><strong>6</strong><span>planning passes</span></div>
+        </div>
+      </div>
+
+      <figure class="hero-figure" aria-hidden="true">
+        <svg viewBox="0 0 420 420" role="presentation">
+          <defs>
+            <radialGradient id="glow" cx="50%" cy="45%" r="60%">
+              <stop offset="0%" stop-color="#f4e3cd"/>
+              <stop offset="100%" stop-color="#efe6d8"/>
+            </radialGradient>
+          </defs>
+          <rect width="420" height="420" rx="18" fill="url(#glow)"/>
+          <g stroke="#d9cbb6" stroke-width="1">
+            <path d="M0 90 H420 M0 180 H420 M0 270 H420 M0 360 H420"/>
+            <path d="M90 0 V420 M180 0 V420 M270 0 V420 M360 0 V420"/>
+          </g>
+          <path class="fig-river" d="M-10 300 C 90 260, 130 340, 220 300 S 360 220, 430 250"
+                fill="none" stroke="#bcd6d2" stroke-width="16" stroke-linecap="round"/>
+          <path class="fig-route" d="M70 330 L120 210 L205 250 L250 130 L340 165"
+                fill="none" stroke="#c2603c" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"/>
+          <g class="fig-stops" fill="#1d2b2a">
+            <circle cx="70"  cy="330" r="9"/>
+            <circle cx="120" cy="210" r="9"/>
+            <circle cx="205" cy="250" r="9"/>
+            <circle cx="250" cy="130" r="9"/>
+            <circle cx="340" cy="165" r="9"/>
+          </g>
+          <g fill="#efe6d8" font-family="Inter, sans-serif" font-size="10" font-weight="700" text-anchor="middle">
+            <text x="70"  y="334">1</text>
+            <text x="120" y="214">2</text>
+            <text x="205" y="254">3</text>
+            <text x="250" y="134">4</text>
+            <text x="340" y="169">5</text>
+          </g>
+        </svg>
+        <figcaption>One day, ordered.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- planner -->
+  <section id="planner" class="section">
+    <div class="wrap">
+      <p class="eyebrow">01 — Your trip</p>
+      <h2 class="section-title">Plan it</h2>
+
+      <form id="trip-form" class="panel form" novalidate>
+
+        <fieldset class="field-group">
+          <legend>Where and when</legend>
+
+          <div class="cities" role="radiogroup" aria-label="City"></div>
+
+          <div class="row three">
+            <label class="field">
+              <span class="label">Starting</span>
+              <input type="date" id="start-date" required>
+              <small class="hint" id="start-weekday">&nbsp;</small>
+            </label>
+
+            <label class="field">
+              <span class="label">Days</span>
+              <select id="days">
+                <option value="1">1 day</option>
+                <option value="2">2 days</option>
+                <option value="3" selected>3 days</option>
+                <option value="4">4 days</option>
+                <option value="5">5 days</option>
+              </select>
+              <small class="hint">Opening hours differ by weekday, so the dates matter.</small>
+            </label>
+
+            <label class="field">
+              <span class="label">Budget <em id="budget-value">€270</em></span>
+              <input type="range" id="budget" min="60" max="900" step="10" value="270">
+              <small class="hint" id="budget-per-day">Entry, food and local transport.</small>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field-group">
+          <legend>What you are after</legend>
+          <div class="chips" id="interests" role="group" aria-label="Interests"></div>
+          <small class="hint">Pick as many as you like. Nothing picked means "show me the best of it".</small>
+        </fieldset>
+
+        <fieldset class="field-group">
+          <legend>How you travel</legend>
+
+          <div class="row three">
+            <div class="field">
+              <span class="label">Pace</span>
+              <div class="segmented" id="pace" role="radiogroup" aria-label="Pace">
+                <label><input type="radio" name="pace" value="relaxed"><span>Relaxed</span></label>
+                <label><input type="radio" name="pace" value="balanced" checked><span>Balanced</span></label>
+                <label><input type="radio" name="pace" value="packed"><span>Packed</span></label>
+              </div>
+              <small class="hint" id="pace-hint">About five stops a day.</small>
+            </div>
+
+            <label class="field">
+              <span class="label">Out from</span>
+              <select id="start-hour"></select>
+              <small class="hint">Nothing is scheduled before this.</small>
+            </label>
+
+            <label class="field">
+              <span class="label">Back by</span>
+              <select id="end-hour"></select>
+              <small class="hint">Everything finishes before this.</small>
+            </label>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="meals" checked>
+            <span>Build a proper food stop into each day</span>
+          </label>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Plan my trip</button>
+          <button type="button" class="btn btn-ghost" id="surprise">Surprise me</button>
+          <span class="form-note" id="form-note"></span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- results -->
+  <section id="results" class="section results" hidden>
+    <div class="wrap">
+      <p class="eyebrow">02 — Your itinerary</p>
+      <h2 class="section-title" id="results-title">Your trip</h2>
+      <p class="section-sub" id="results-sub"></p>
+
+      <div class="summary" id="summary"></div>
+
+      <div class="budget-bar" id="budget-bar"></div>
+
+      <details class="working" id="working">
+        <summary>
+          <span>How this itinerary was built</span>
+          <em id="working-headline"></em>
+        </summary>
+        <div class="working-body" id="working-body"></div>
+      </details>
+
+      <div class="day-tabs" id="day-tabs" role="tablist" aria-label="Days"></div>
+      <div id="itinerary"></div>
+
+      <div class="leftout" id="leftout"></div>
+
+      <div class="exports">
+        <button type="button" class="btn btn-ghost" id="export-text">Copy as text</button>
+        <button type="button" class="btn btn-ghost" id="export-csv">Download CSV</button>
+        <button type="button" class="btn btn-ghost" id="export-ics">Add to calendar (.ics)</button>
+        <button type="button" class="btn btn-ghost" id="print">Print</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- method -->
+  <section id="method" class="section method">
+    <div class="wrap">
+      <p class="eyebrow">03 — Method</p>
+      <h2 class="section-title">Six passes</h2>
+      <p class="section-sub">
+        Planning a trip is a scheduling problem with four constraints pulling
+        against each other: what you want to see, what a day physically holds,
+        what is open when, and what you can spend. Each pass narrows the
+        problem for the next one.
+      </p>
+
+      <ol class="passes">
+        <li>
+          <h3>Score</h3>
+          <p>Every place in the city is rated against your interests, its own standing, and what it does to a day's budget. Interests dominate — a plan full of excellent places you did not ask for is a bad plan.</p>
+        </li>
+        <li>
+          <h3>Select</h3>
+          <p>A bounded knapsack: maximise total score inside a time budget and a money budget. Solved greedily by score-per-minute, then a swap pass that fixes what greedy gets wrong.</p>
+        </li>
+        <li>
+          <h3>Cluster</h3>
+          <p>k-means over the coordinates, one cluster per day, seeded furthest-point-first. Then a balancing pass, because k-means optimises for tightness and will happily give you a nine-stop day and a one-stop day.</p>
+        </li>
+        <li>
+          <h3>Route</h3>
+          <p>Each day is an open travelling-salesman problem. Nearest neighbour from every possible starting stop, each result polished with 2-opt, shortest one kept — plus your own shortlist order in the same competition, so the result can never be worse than the list it started from.</p>
+        </li>
+        <li>
+          <h3>Schedule</h3>
+          <p>The route is laid against the clock with real opening hours and travel times. Anything that will not fit is offered to every other day at every position, and only dropped if nowhere takes it.</p>
+        </li>
+        <li>
+          <h3>Improve</h3>
+          <p>Hill climbing: move a stop to another day, keep the move if the trip gets shorter without losing a stop, stop when a full sweep finds nothing. Then trim to the budget, then even out the days.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ about -->
+  <section id="about" class="section about">
+    <div class="wrap about-grid">
+      <div>
+        <p class="eyebrow">04 — About</p>
+        <h2 class="section-title">Honest notes</h2>
+        <ul class="notes">
+          <li><strong>This is not a language model.</strong> It is classical AI — search, clustering and local optimisation. That is a deliberate choice: a static page cannot hold an API key without giving it away, and the planning here is a scheduling problem, which is a thing algorithms are good at.</li>
+          <li><strong>The catalogue is hand-built.</strong> Five cities, curated by hand with coordinates, typical opening hours and indicative prices. Prices move and hours change with the season — treat them as good enough to plan around, not as a booking confirmation.</li>
+          <li><strong>Distances are straight-line.</strong> Real streets are longer than the crow flies, so a day's true walking is somewhat more than the figure shown. The comparison between routes is still fair, because both are measured the same way.</li>
+          <li><strong>Nothing leaves your browser.</strong> There is no server, no account and no analytics. Saved trips live in this browser's own storage and nowhere else.</li>
+        </ul>
+      </div>
+      <aside class="card stack-card">
+        <h3>Built with</h3>
+        <p>Vanilla JavaScript, no framework and no build step. Three files: the catalogue, the engine, and the interface.</p>
+        <p><code>planner.js</code> contains no DOM code at all, so the interesting half of the project can be tested on its own — and is, across every city, length, pace and budget combination.</p>
+        <p class="stack-links">
+          <a href="https://github.com/Nura-ahm/Trip-Planner" rel="noopener">Source on GitHub</a>
+          <a href="https://nura-ahm.github.io/" rel="noopener">More work</a>
+        </p>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <p><strong>Itinerary</strong> — a demonstration project.</p>
+    <p>Built by <a href="https://nura-ahm.github.io/" rel="noopener">Nura M. Ahmed</a>.</p>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="planner.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
