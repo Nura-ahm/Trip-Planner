@@ -16,11 +16,12 @@ returns a scheduled itinerary: which places, on which day, in which order, at
 what time, for what money — with a route map per day and a report of what each
 planning pass did.
 
-It is **not** a language model, and there is no API key to enter. This is
-classical AI — scoring, a knapsack, k-means, a travelling-salesman heuristic and
-hill climbing — running in the browser. That is a deliberate choice: a static
-page cannot hold a secret key without giving it away, and itinerary building is
-a scheduling problem, which is the kind of thing algorithms are good at.
+The planning is classical AI — scoring, a knapsack, k-means, a
+travelling-salesman heuristic and hill climbing — running in the browser. That
+is a deliberate choice rather than a limitation: itinerary building is a
+scheduling problem, which is the kind of thing algorithms are good at, and
+solving it client-side means no key to leak, no server to pay for, and no
+network round-trip between the form and the answer.
 
 ## The engine
 
@@ -40,7 +41,7 @@ Each run reports what it did: places considered, starting points tried, 2-opt
 swaps kept, arrangements evaluated, moves taken, and the distance before and
 after ordering. The claims on the page are checkable rather than decorative.
 
-### On the honesty of the headline number
+### Choosing the baseline
 
 The "X% shorter" figure compares the same stops in two orders: the order you
 would naturally write them down (most wanted first) against the order they are

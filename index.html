@@ -46,14 +46,14 @@
           neighbourhood, and puts each day in the order that walks the least.
         </p>
         <p class="lede muted">
-          No language model is involved, and there is no API key to enter — the
-          scheduling is done here in your browser, and the page reports exactly
-          what it optimised so you can check the claim.
+          It runs entirely in your browser — no account, no key, no waiting on a
+          server — and it shows its working, so you can see what it optimised
+          rather than take the itinerary on trust.
         </p>
         <div class="hero-stats">
           <div><strong id="hero-places">—</strong><span>places catalogued</span></div>
           <div><strong id="hero-cities">—</strong><span>cities</span></div>
-          <div><strong>6</strong><span>planning passes</span></div>
+          <div><strong>7</strong><span>planning passes</span></div>
         </div>
       </div>
 
@@ -219,7 +219,7 @@
   <section id="method" class="section method">
     <div class="wrap">
       <p class="eyebrow">03 — Method</p>
-      <h2 class="section-title">Six passes</h2>
+      <h2 class="section-title">Seven passes</h2>
       <p class="section-sub">
         Planning a trip is a scheduling problem with four constraints pulling
         against each other: what you want to see, what a day physically holds,
@@ -249,8 +249,12 @@
           <p>The route is laid against the clock with real opening hours and travel times. Anything that will not fit is offered to every other day at every position, and only dropped if nowhere takes it.</p>
         </li>
         <li>
+          <h3>Top up</h3>
+          <p>Selection works on estimates, so the finished schedule usually leaves gaps. This inserts the best remaining places wherever the detour is smallest, favouring days that still have room in them.</p>
+        </li>
+        <li>
           <h3>Improve</h3>
-          <p>Hill climbing: move a stop to another day, keep the move if the trip gets shorter without losing a stop, stop when a full sweep finds nothing. Then trim to the budget, then even out the days.</p>
+          <p>Hill climbing: move a stop to another day, keep the move if the trip gets shorter without losing a stop, stop when a full sweep finds nothing. Then trim to the budget, even out the days, and re-route each one a final time.</p>
         </li>
       </ol>
     </div>
@@ -261,12 +265,12 @@
     <div class="wrap about-grid">
       <div>
         <p class="eyebrow">04 — About</p>
-        <h2 class="section-title">Honest notes</h2>
+        <h2 class="section-title">Good to know</h2>
         <ul class="notes">
-          <li><strong>This is not a language model.</strong> It is classical AI — search, clustering and local optimisation. That is a deliberate choice: a static page cannot hold an API key without giving it away, and the planning here is a scheduling problem, which is a thing algorithms are good at.</li>
-          <li><strong>The catalogue is hand-built.</strong> Five cities, curated by hand with coordinates, typical opening hours and indicative prices. Prices move and hours change with the season — treat them as good enough to plan around, not as a booking confirmation.</li>
-          <li><strong>Distances are straight-line.</strong> Real streets are longer than the crow flies, so a day's true walking is somewhat more than the figure shown. The comparison between routes is still fair, because both are measured the same way.</li>
-          <li><strong>Nothing leaves your browser.</strong> There is no server, no account and no analytics. Saved trips live in this browser's own storage and nowhere else.</li>
+          <li><strong>Curated, not scraped.</strong> Five cities, each catalogued by hand with coordinates, typical opening hours and indicative prices — enough to plan a real day around. Hours and prices do shift with the season, so check before you buy a ticket.</li>
+          <li><strong>Classical AI, not a chatbot.</strong> Scoring, clustering, a travelling-salesman search and hill climbing. Building an itinerary is a scheduling problem, and that is what algorithms are for.</li>
+          <li><strong>Distances are as the crow flies.</strong> Real streets run a little longer, though every route on the page is measured the same way, so the comparisons hold.</li>
+          <li><strong>Nothing leaves your browser.</strong> No server, no account, no analytics. Saved trips live in this browser's own storage and nowhere else.</li>
         </ul>
       </div>
       <aside class="card stack-card">
@@ -285,7 +289,7 @@
 
 <footer class="footer">
   <div class="wrap footer-inner">
-    <p><strong>Itinerary</strong> — a demonstration project.</p>
+    <p><strong>Itinerary</strong> — constraint-based trip planning.</p>
     <p>Built by <a href="https://nura-ahm.github.io/" rel="noopener">Nura M. Ahmed</a>.</p>
   </div>
 </footer>

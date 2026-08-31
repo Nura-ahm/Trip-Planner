@@ -386,7 +386,8 @@ const Render = {
       ['Selected', `Shortlisted inside a ${duration(PACE[plan.request.pace].targetMins * plan.request.days)} time budget and ${money(s.budget)}.`],
       ['Clustered', `Split into <b>${plan.request.days}</b> geographic group${plan.request.days === 1 ? '' : 's'} by k-means, then balanced so no day is empty.`],
       ['Routed', `<b>${s.routeStarts}</b> starting points tried, <b>${s.twoOptSwaps}</b> improving 2-opt swaps kept.`],
-      ['Scheduled', `Laid against real opening hours. <b>${s.toppedUp}</b> extra stop${s.toppedUp === 1 ? '' : 's'} added to fill the gaps the estimate left.`],
+      ['Scheduled', `Laid against real opening hours, with travel time between every stop.`],
+      ['Topped up', `<b>${s.toppedUp}</b> extra stop${s.toppedUp === 1 ? '' : 's'} slotted in where the detour was smallest, filling the gaps the estimate left.`],
       ['Improved', `<b>${s.evaluated}</b> alternative arrangements evaluated, <b>${s.climbMoves}</b> improving move${s.climbMoves === 1 ? '' : 's'} and <b>${s.balanceMoves}</b> balancing move${s.balanceMoves === 1 ? '' : 's'} taken. <b>${s.polished}</b> day${s.polished === 1 ? '' : 's'} re-ordered at the end.`],
     ];
 
@@ -410,14 +411,13 @@ const Render = {
           <b>${s.optimisedKm.toFixed(1)} km</b>
         </div>
         <p class="hint">
-          The same stops both times: first in the order you would naturally write
-          them down — the ones you most want to see, first — and then in the order
-          they are actually scheduled. Distances are straight-line, so real streets
-          are longer, but both are measured the same way.
-          ${s.savedPct <= 0 ? `<br><br><strong>On this trip the scheduled route is the longer one.</strong>
-            That happens when the shortest order would put a stop outside its
-            opening hours: the engine will always take the extra kilometre over
-            sending you to a closed door.` : ''}
+          The same stops both times — first in the order you would naturally write
+          them down, then in the order they are actually scheduled.
+          ${s.savedPct <= 0
+            ? `Here the scheduled route is the longer of the two: the shortest
+               order would have put a stop outside its opening hours, and an open
+               door beats a saved kilometre.`
+            : ''}
         </p>
       </div>`;
   },
@@ -530,7 +530,7 @@ const Render = {
 
     $('#leftout').innerHTML = `
       <h3>Left out</h3>
-      <p>A plan should say what it could not fit, and why.${vetoed.length ? ' Removed places come back if you change the dates or budget.' : ''}</p>
+      <p>What did not make it, and why.${vetoed.length ? ' Anything you removed comes back if you change the dates or the budget.' : ''}</p>
       <ul>
         ${interesting.map((l) => `
           <li><b>${esc(l.place.name)}</b> — <em>${label[l.reason]}</em></li>`).join('')}
