@@ -606,13 +606,17 @@ const Export = {
     };
     const fold = (s) => s.replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
 
+    // DTSTART and DTEND are deliberately floating — 09:00 means 09:00 wherever
+    // you are — but DTSTAMP is a real UTC instant and has to be built as one.
+    const utcStamp = () => new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
     const events = [];
     plan.days.forEach((day, i) => {
       day.items.forEach((item, n) => {
         events.push([
           'BEGIN:VEVENT',
           `UID:${item.place.id}-${i}-${n}@trip-planner`,
-          `DTSTAMP:${stamp(new Date(), 0)}Z`,
+          `DTSTAMP:${utcStamp()}`,
           `DTSTART:${stamp(day.date, item.start)}`,
           `DTEND:${stamp(day.date, item.end)}`,
           `SUMMARY:${fold(item.place.name)}`,
@@ -661,13 +665,18 @@ function run(options = {}) {
     return;
   }
 
-  State.plan = plan;
   Store.save(request);
 
+  // Keep the previous plan in State when the new one comes back empty. The old
+  // itinerary is still the one on screen, and the exports read from State — so
+  // adopting an empty plan here would hand back a header-only CSV and an empty
+  // calendar file while a full trip is visible above them.
   if (plan.empty || !plan.stats.stops) {
     Render.toast('Nothing fits those constraints — try more budget or more hours.');
     return;
   }
+
+  State.plan = plan;
 
   Render.everything(plan);
 
@@ -702,6 +711,11 @@ function wire() {
     State.visibleDay = tab.dataset.day;
     Render.tabs(State.plan);
     Render.days(State.plan);
+
+    // Redrawing the strip destroys the button that was just activated, which
+    // drops keyboard focus to the body. Put it back on the equivalent tab.
+    const restored = $(`#day-tabs [data-day="${State.visibleDay}"]`);
+    if (restored) restored.focus();
   });
 
   // "Not this one" — veto a place and replan around it
