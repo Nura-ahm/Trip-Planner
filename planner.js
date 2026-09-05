@@ -450,7 +450,15 @@ function clusterByDay(places, days) {
     if (shift < 0.01) break;
   }
 
-  return balanceClusters(groups, centres);
+  const balanced = balanceClusters(groups, centres);
+
+  // Seeding stops early when there are fewer places than days — a tight budget
+  // can leave only a handful of affordable stops — and without this the trip
+  // would quietly come back shorter than was asked for. An empty day the
+  // traveller can see is honest; a missing one is not.
+  while (balanced.length < days) balanced.push([]);
+
+  return balanced;
 }
 
 /**
